@@ -22,7 +22,22 @@ You can just write in a console `make -f ./progc/Makefile` to run the makefile.
 
 You can see some examples in the [demo](./demo/) folder. It has its own README to explain the examples further.
 
+The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments:
+- **path**: The path to a CSV file with the data. It must be the first argument.
+- "**-h**": Will show the help message, which is the list of arguments and what they do. It will not run any other argument.
+- "**-d1**": Show the top 10 drivers with the most journeys.
+- "**-d2**": Show the top 10 drivers with the longest distance travelled.
+- "**-l**": Show the top 10 longest routes.
+- "**-t**": Show the top 10 most crossed cities.
+- "**-s**": Min, max and average distances for every route.
 
+**Exemples:**
+```sh
+./CYTruck.sh -h # shows the help message
+./CYTruck.sh ./data/data.csv -d1 -h # also shows the help message
+./CYTruck.sh -s # shows the min, max and average distances for every routes
+./CYTruck.sh -s -t # shows the min, max and average distances for every routes AND the top 10 most corssed cities
+```
 
 ## Todo
 - [ ] Finish Readme
