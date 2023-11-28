@@ -35,8 +35,9 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments:
 ```sh
 ./CYTruck.sh -h # shows the help message
 ./CYTruck.sh ./data/data.csv -d1 -h # also shows the help message
-./CYTruck.sh -s # shows the min, max and average distances for every routes
-./CYTruck.sh -s -t # shows the min, max and average distances for every routes AND the top 10 most corssed cities
+./CYTruck.sh ./data/data.csv -s # shows the min, max and average distances for every routes
+./CYTruck.sh ./data/data.csv -s -t # shows the min, max and average distances for every routes AND the top 10 most corssed cities
+./CYTruck.sh -s -t # shows an error, the first parameter isn't a file path to a CSV file
 ```
 
 ## Todo
