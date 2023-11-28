@@ -9,6 +9,7 @@ The CY Tech project of 2023/2024.
 - [Explain how to use the program](#how-to-use)
 - [List of things that are to be added soon](#todo)
 - [The limits, unimplemented or known bugs](#functionnality-limits)
+- [Show what has been done when](#planning)
 
 ## Compilation
 
@@ -18,11 +19,21 @@ You can just write in a console `make -f ./progc/Makefile` to run the makefile.
 
 ## What is what?
 
+- The [pdf file](./Projet_CY_Truck_preIng2_2023_2024_v1.0.0.pdf) is the subject for this whole project.
+- [CYTruck.sh](./CYTruck.sh) is the main entry of the project.
+- The [temp](./temp/) folder is where temporary file will be made during the execution.
+- The [progc](./progc/) file is the source folder or the code. It contains the C, Headers, makefile ... files. The compiled files will be in there too.
+- The [images](./images/) folder contains the result of the command.
+- The [demo](./demo/) folder is where a C executable may put file for the shell file to use. You can also open them to read the raw data instead of the images. It also contains examples with their own README to reproduce them.
+- The [data](./data/) folder is where the CSV files must be pasted before using the program.
+
 ## How to use
 
 You can see some examples in the [demo](./demo/) folder. It has its own README to explain the examples further.
 
-The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments:
+**You must paste your CSV file in the [data](./data/) folder before using the program! It may use it and will search it in this folder.**
+
+The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The first one must be the path to the CSV file. You also need at least one argument, but you can use more than one at a time.
 - **path**: The path to a CSV file with the data. It must be the first argument.
 - "**-h**": Will show the help message, which is the list of arguments and what they do. It will not run any other argument.
 - "**-d1**": Show the top 10 drivers with the most journeys.
@@ -45,6 +56,7 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments:
 - [ ] PDF document for the task shared and worked on
 - [ ] Planning realisation
 - [ ] The whole project... 
+- [ ] Add another shell file to call the clean method of the Makefile file
 
 ## Functionnality limits
 
@@ -59,3 +71,6 @@ Everything
 ### Bugs
 
 None yet
+
+## Planning
+- 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...)
