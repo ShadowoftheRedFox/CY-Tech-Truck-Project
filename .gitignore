@@ -53,4 +53,4 @@ dkms.conf
 
 # Exceptions:
 # GNU Plot
-!gp548-win64-mingw.exe
+!gnuplot.exe
