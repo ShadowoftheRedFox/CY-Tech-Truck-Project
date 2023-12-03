@@ -10,6 +10,7 @@ The CY Tech project of 2023/2024.
 - [List of things that are to be added soon](#todo)
 - [The limits, unimplemented or known bugs](#functionnality-limits)
 - [Show what has been done when](#planning)
+- [Add large CSV file to teh repository](#add-large-csv-file-to-the-repository)
 
 ## Compilation
 
@@ -59,6 +60,8 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [ ] Add another shell file to call the clean method of the Makefile file
 - [x] Check if "-h" is in the arguments and display a help message
 - [x] Check if the first argument is a csv file that exist
+- [x] Create images directory if not present
+- [x] Create temp directory if not present, or delete it's content
 
 ## Functionnality limits
 
@@ -76,3 +79,8 @@ None yet
 
 ## Planning
 - 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...)
+- 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS)
+
+## Add large CSV file to the repository
+
+You need to install [Git LFS](https://docs.github.com/fr/repositories/working-with-files/managing-large-files/installing-git-large-file-storage) (Github Large File System) and follow [this step in their documentation](https://docs.github.com/fr/repositories/working-with-files/managing-large-files/configuring-git-large-file-storage).
