@@ -62,6 +62,8 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [x] Check if the first argument is a csv file that exist
 - [x] Create images directory if not present
 - [x] Create temp directory if not present, or delete it's content
+- [x] Display execution time
+- [x] Display the execution time even in ExitDisplay
 
 ## Functionnality limits
 
