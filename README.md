@@ -57,6 +57,8 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [ ] Planning realisation
 - [ ] The whole project... 
 - [ ] Add another shell file to call the clean method of the Makefile file
+- [x] Check if "-h" is in the arguments and display a help message
+- [x] Check if the first argument is a csv file that exist
 
 ## Functionnality limits
 
