@@ -18,6 +18,33 @@ ExitDisplay() {
 
 # set tab title to what we want
 echo -en "\033]0;CYTruck\a"
+
+# todo compile the program if not done
+# todo check file compilation result
+
+# check if the images dir exist
+if [ ! -d '/images' ]; then
+    # create the dir
+    mkdir 'images' #? check if errors?
+    echo 'Created images directory.'
+else
+    echo 'images directory exists already.'
+fi
+
+# check if the temp dir exist
+if [ ! -d '/temp' ]; then
+    # create the dir
+    mkdir 'temp' #? check if errors?
+    echo 'Created temp directory.'
+else
+    echo 'temp directory exists already, cleaning...'
+    rm -r '/temp/*' #? check if errors?
+    echo 'Done.'
+fi
+
+# todo check: data dir, temp dir, demo dir and images dir
+
+# check the argument number, if non exit
 if [ $# == 0 ]; then
     ExitDisplay "No argument found. Use \"-h\" to get help."
 fi
