@@ -52,6 +52,11 @@ Mkfile.old
 dkms.conf
 
 # Exceptions:
-# GNU Plot
+# GNU Plot, generate the graphs
 !gnuplot.exe
+# backup save of the data in case we mess up
 .save.data.csv
+# extract of the data to quickly test the code
+test.csv
+# temp folder
+/temp/*
