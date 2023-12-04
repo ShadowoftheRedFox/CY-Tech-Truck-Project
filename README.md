@@ -40,7 +40,7 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - "**-d1**": Show the top 10 drivers with the most journeys.
 - "**-d2**": Show the top 10 drivers with the longest distance travelled.
 - "**-l**": Show the top 10 longest routes.
-- "**-t**": Show the top 10 most crossed cities.
+- "**-t**": Show the top 10 most crossed cities with how many different drivers cross it.
 - "**-s**": Min, max and average distances for every route.
 
 **Exemples:**
@@ -64,6 +64,8 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [x] Create temp directory if not present, or delete it's content
 - [x] Display execution time
 - [x] Display the execution time even in ExitDisplay
+- [x] -l has its data ready, between 8s and 14s (or 10s)
+- [ ] do the graph for -l
 
 ## Functionnality limits
 
@@ -80,8 +82,9 @@ Everything
 None yet
 
 ## Planning
-- 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...)
-- 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS)
+- 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...) (Hugo)
+- 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS) (Hugo)
+- 04/12/2023: Started the data gathering for -l, -s and -t. -l is working between 8 and 14s (Hugo, Bilel, Prince). Started the C file (Bilel).
 
 ## Add large CSV file to the repository
 

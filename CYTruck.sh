@@ -90,7 +90,7 @@ for arg in $*; do
 - \"-d1\":\t Show the top 10 drivers with the most journeys.\n
 - \"-d2\":\t Show the top 10 drivers with the longest distance travelled.\n
 - \"-l\" :\t Show the top 10 longest routes.\n
-- \"-t\" :\t Show the top 10 most crossed cities.\n
+- \"-t\" :\t Show the top 10 most crossed cities with how many different drivers cross it.\n
 - \"-s\" :\t Min, max and average distances for every route."
     fi
 done
@@ -131,18 +131,63 @@ for arg in $*; do
         # sum the distance of each step
         # output the top 10 with distances and ID
         # make the graph
+
+        # remove the first line (the column header)
+        tail -n +2 "${filePath}" >"./temp/l_argument_sum_pre.csv"
+        ################################# 10s constant #############################################
+        # # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
+        # echo "Summing route's length..."
+        # awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum_pre.csv" >"./temp/l_argument_sum.csv"
+        # # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
+        # echo "Sorting route's length..."
+        # sort -t';' -k 2 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
+        # echo "Sorting route's ID..."
+        # # get the top 10 longest route
+        # head -n 10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
+        # # and sort them by id
+        # sort -t';' -k 1 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv" # TODO move to demo dir later
+        # # cat "./temp/l_argument_top10_finish.csv" # to show the top 10
+        ###########################################################################################
+
+        ############################### between 8s and 14s ########################################
+        split -l 800000 "./temp/l_argument_sum_pre.csv" ./temp/l_argument_chunk_
+        # Process each chunk in parallel
+        for chunk_file in ./temp/l_argument_chunk_*; do
+            # Use awk to calculate the sum of values for each ID in the chunk
+            awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "${chunk_file}" >"${chunk_file}.csv" &
+        done
+        # Wait for all background processes to finish
+        wait
+
+        # Concatenate the results from all chunks
+        cat ./temp/l_argument_chunk_*.csv >./temp/l_argument_sum.csv
+
+        # awk the last values
+        # awk -F';' '{sum[$1]+=$2} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum.csv" >"./temp/l_argument_sum_all.csv"
+
+        echo "Sorting route's length..."
+        sort -t';' -k 2 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
+        echo "Sorting route's ID..."
+        # get the top 10 longest route
+        head -n 10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
+        # and sort them by id
+        sort -t';' -k 1 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv" # TODO move to demo dir later
+        # cat "./temp/l_argument_top10_finish.csv" # to show the top 10
+        ##########################################################################################
+
+        echo "Creating graph..."
+        #TODO graph
         ;;
     "-t")
         echo "t arg found"
         # USE C TO SORT DATA
-        # keep the city name, cut other data
-        # put it in a file and use the c file on it
+        # keep the city name,route id and drivers cut other data
+        # put it in a file and use tl:he c file on it
         # count the number of occurances (how?)
-        # output the top 10 with names and times crossed
+        # output the top 10 with names, times crossed and number of different drivers that went by
         # make the graph
 
-        cat $(cut ${filePath} -d';' -f1) >"./temp/t_argument.csv"
-
+        cut ${filePath} -d';' -f1,3,4,6 >"./temp/t_argument.csv"
         ;;
     "-s")
         echo "s arg found"
@@ -151,6 +196,9 @@ for arg in $*; do
         # put it in a file and use the c file on it
         # get the min, the max and average
         # make the graph
+
+        cut ${filePath} -d';' -f1,5 >"./temp/s_argument.csv"
+
         ;;
     *) echo $arg ": found" ;;
     esac
