@@ -5,6 +5,8 @@
 #? argument list: $*
 #? argument 0 2 and 4: $0 $2 $4
 #? get all argument starting from the n one: ${@:n}
+# always ignore the first line if the csv file
+# CSV: Route ID;Step ID;Town A;Town B;Distance;Driver name
 
 # function that return a message before exiting the script
 ExitDisplay() {
@@ -49,17 +51,15 @@ if [ ! -d 'temp' ]; then
     # create the dir
     mkdir -p 'temp' #? check if errors?
     echo 'Created temp directory.'
+elif [ -n "$(ls "./temp/")" ]; then
+    echo 'The temp directory exists already, cleaning...'
+    oldDir=$(pwd)
+    cd "temp"
+    rm -r * #? check if errors?
+    cd "${oldDir}"
+    echo 'Done.'
 else
-    if [ -n "$(ls "./temp/")" ]; then
-        echo 'The temp directory exists already, cleaning...'
-        oldDir=$(pwd)
-        cd "temp"
-        rm -r * #? check if errors?
-        cd "${oldDir}"
-        echo 'Done.'
-    else
-        echo 'The temp directory exists.'
-    fi
+    echo 'The temp directory exists.'
 fi
 
 # todo check: data dir, temp dir, demo dir and images dir
@@ -85,15 +85,20 @@ filePath=$1
 for arg in $*; do
     if [ $arg == '-h' ]; then
         ExitDisplay ${startTimeCount} "Help:\n
-- path:\t The path to a CSV file with the data. It must be the first argument.\n
-- \"-h\":\t Will show the help message, which is the list of arguments and what they do. It will not run any other argument.\n
+- path :\t The path to a CSV file with the data. It must be the first argument.\n
+- \"-h\" :\t Will show the help message, which is the list of arguments and what they do. It will not run any other argument.\n
 - \"-d1\":\t Show the top 10 drivers with the most journeys.\n
 - \"-d2\":\t Show the top 10 drivers with the longest distance travelled.\n
-- \"-l\":\t Show the top 10 longest routes.\n
-- \"-t\":\t Show the top 10 most crossed cities.\n
-- \"-s\":\t Min, max and average distances for every route."
+- \"-l\" :\t Show the top 10 longest routes.\n
+- \"-t\" :\t Show the top 10 most crossed cities.\n
+- \"-s\" :\t Min, max and average distances for every route."
     fi
 done
+
+# check if there are arguments after the file opath
+if [ $# -lt 2 ]; then
+    ExitDisplay ${startTimeCount} "You need at least an argument with the file path!"
+fi
 
 # check if the first argument is a file ending with .csv
 if [ ${filePath##*.} != "csv" ]; then
@@ -106,11 +111,47 @@ fi
 # to check each parameters option
 for arg in $*; do
     case $arg in
-    "-d1") echo "d1 arg found" ;;
-    "-d2") echo "d2 arg found" ;;
-    "-l") echo "l arg found" ;;
-    "-t") echo "t arg found" ;;
-    "-s") echo "s arg found" ;;
+    "-d1")
+        echo "d1 arg found"
+        # need to sort by route id or driver name
+        # count the number of different routes
+        # output the top 10 with number of routes and names
+        # make teh graph
+        ;;
+    "-d2")
+        echo "d2 arg found"
+        # need to sort by driver name
+        # then add each distance
+        # output the top 10 ones with distances to make the graph
+        # make the graph
+        ;;
+    "-l")
+        echo "l arg found"
+        # need to sort by route id
+        # sum the distance of each step
+        # output the top 10 with distances and ID
+        # make the graph
+        ;;
+    "-t")
+        echo "t arg found"
+        # USE C TO SORT DATA
+        # keep the city name, cut other data
+        # put it in a file and use the c file on it
+        # count the number of occurances (how?)
+        # output the top 10 with names and times crossed
+        # make the graph
+
+        cat $(cut ${filePath} -d';' -f1) >"./temp/t_argument.csv"
+
+        ;;
+    "-s")
+        echo "s arg found"
+        # USE C TO SORT DATA
+        # get all routes sorted and with their distances (cut other data)
+        # put it in a file and use the c file on it
+        # get the min, the max and average
+        # make the graph
+        ;;
     *) echo $arg ": found" ;;
     esac
 done

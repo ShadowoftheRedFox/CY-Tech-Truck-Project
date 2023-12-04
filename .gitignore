@@ -54,3 +54,4 @@ dkms.conf
 # Exceptions:
 # GNU Plot
 !gnuplot.exe
+.save.data.csv
