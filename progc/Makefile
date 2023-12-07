@@ -1,5 +1,6 @@
 # defines compiler
-CC = gcc
+# TODO change the path to just the command name
+CC = C:/MinGW/bin/gcc.exe
 # defines where the files are
 FILES_DIR = progc
 # defines build directory 
@@ -21,7 +22,7 @@ OBJ_STRIP=$(OBJ:$(SRC_DIR)/%=%)
 OBJ_IN_DIR=$(addprefix $(OBJ_DIR)/, $(OBJ_STRIP))
 
 # build everything
-all: objdir savedir buildir exec
+all: objdir buildir exec
 
 # build the executable
 exec: $(OBJ_IN_DIR)
@@ -38,7 +39,7 @@ objdir:
 # delete bin then obj directory, with all files in it, except the gnuplot executable
 clean: 
 	if [ -d "$(BUILD_DIR)" ]; then\
-		rm -r $(BUILD_DIR) -v !("gnuplot.exe") \
+		rm -r $(BUILD_DIR) \
 	fi
 	if [ -d "$(OBJ_DIR)" ]; then\
 		rm -r $(OBJ_DIR) \
