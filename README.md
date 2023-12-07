@@ -65,7 +65,16 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [x] Display execution time
 - [x] Display the execution time even in ExitDisplay
 - [x] -l has its data ready, between 8s and 14s (or 10s)
-- [ ] do the graph for -l
+- [x] do the graph for -l
+- [ ] finish C part for -s
+- [ ] finish graph part for -s
+- [ ] finish C part for -t
+- [ ] finish graph part for -t
+- [ ] finish graph part for -d1
+- [ ] finish graph part for -d2
+- [ ] rename every absolute path to executable in command 
+- [ ] change every temp file that should be in demo to demo 
+- [ ] make a good looking folder in demo with each necessary file in it 
 
 ## Functionnality limits
 
@@ -82,9 +91,10 @@ Everything
 None yet
 
 ## Planning
-- 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...) (Hugo)
-- 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS) (Hugo)
+- 28/11/2023: Created the repository and basic files (README, Makefile, the gnuplot executable...) (Hugo).
+- 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS) (Hugo).
 - 04/12/2023: Started the data gathering for -l, -s and -t. -l is working between 8 and 14s (Hugo, Bilel, Prince). Started the C file (Bilel).
+- 07/12/2023: Finished -l (Hugo), corrected data for -s (Hugo). Continued the C file for -s (Bilel, Hugo). Made gnuplot script for -s (Hugo).
 
 ## Add large CSV file to the repository
 
