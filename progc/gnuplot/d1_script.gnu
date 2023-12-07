@@ -1,7 +1,7 @@
 #!/usr/bin/gnuplot -persist
 set title 'Top 10 drivers with the most travels'
-set xlabel 'Name'
-set ylabel 'Travels amount'
+set xlabel 'Travels amount'
+set ylabel 'Name'
 set output './temp/d1_image.png'
 set key noenhanced
 
@@ -16,6 +16,7 @@ set xrange [0<*:*]
 
 # set a tick every 1 units
 set ytics 1
+set xtics autofreq
 
 # linestyle for the grid
 set style line 100 lc rgb "grey" lw 0.5
@@ -26,13 +27,10 @@ set grid ls 100
 set style fill solid 1.0 border lt -1
 
 # configure boxes style width
-set boxwidth 0.5 relativ
+# set boxwidth 0.5 relativ
+myBoxWidth = 0.8
+myOffset = 0.5
+set offsets 0,0,myOffset-myBoxWidth/2.,myOffset
 
-# notitle remove the legend
-# u is a shortcut of using
-# $0 represent teh line number of the read data
-# (2*$0+1) is the x position
-# 1 is the y position (the data in the field 1)
-# xticlabel(2) put a label on the x axis with the content in the field 2
-# using boxes style and removing the legend titles
-plot './temp/l_argument_top10_finish.csv' u (2*$0+1):1:xticlabel(2) with boxes notitle
+# TODO add comment, and find a way to center the data
+plot './temp/d1_argument_top10.csv' using (myOffset*$2):0:(myOffset*$2):(myBoxWidth/2.):($0+1):ytic(1) with boxxy lc var notitle

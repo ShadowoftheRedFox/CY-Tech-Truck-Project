@@ -134,16 +134,20 @@ for arg in $*; do
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing drivers routes..."
         # if step ID is 1, add the route to the driver names, then at the end, print the name and it's route amount
-        awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/d1_argument_sum_pre.csv" >"./temp/d1_argument_sum.csv"
+        awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%s;%d\n", i, sum[i]}' "./temp/d1_argument_sum_pre.csv" >"./temp/d1_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting drivers routes..."
-        sort -t';' -k 1 -n -r "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
+        sort -t';' -k 2 -n "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
         echo "Getting the top drivers..."
         # get the top 10 longest route
-        head -n 10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
+        tail -n 10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
         # cat "./temp/d1_argument_top10.csv" # to show the top 10
 
-        #todo graph
+        echo "Creating graph..."
+
+        # TODO move output to images dir
+        # TODO change the path to just the command name
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/d1_script.gnu
         ;;
     "-d2")
         echo "d2 arg found"
@@ -156,16 +160,24 @@ for arg in $*; do
         tail -n +2 "${filePath}" >"./temp/d2_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing drivers routes..."
-        awk -F';' '{sum[$6]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' "./temp/d2_argument_sum_pre.csv" >"./temp/d2_argument_sum.csv" # TODO ask teh theacher what is a route (step or whole)
+        awk -F';' '{sum[$6]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/d2_argument_sum_pre.csv" >"./temp/d2_argument_sum.csv" # TODO ask teh theacher what is a route (step or whole)
         # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting drivers routes..."
-        sort -t';' -k 1 -n -r "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
+        sort -t';' -k 2 -n "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
         echo "Sorting drivers..."
         # get the top 10 longest route
-        head -n 10 "./temp/sorted_d2_argument_sum.csv" >"./temp/d2_argument_top10.csv"
+        tail -n 10 "./temp/sorted_d2_argument_sum.csv" >"./temp/d2_argument_top10.csv"
         # cat "./temp/d2_argument_top10.csv" # to show the top 10
 
-        #todo graph
+        echo "Creating graph..."
+
+        # FIXME necessary?
+        # copy the d2_script in temp dir to edit
+        cp "./progc/gnuplot/d2_script.gnu" "./temp/d2_script.gnu"
+
+        # TODO move output to images dir
+        # TODO change the path to just the command name
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/d2_script.gnu
         ;;
     "-l")
         echo "l arg found"
@@ -192,12 +204,9 @@ for arg in $*; do
 
         echo "Creating graph..."
 
-        # copy the l_script in temp dir to edit
-        cp "./progc/gnuplot/l_script.gnu" "./temp/l_script.gnu"
-
         # TODO move output to images dir
-        #TODO change the path to just the command name
-        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./temp/l_script.gnu
+        # TODO change the path to just the command name
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/temp/l_script.gnu
         ;;
     "-t")
         echo "t arg found"
@@ -226,11 +235,11 @@ for arg in $*; do
         # make the graph
 
         # remove the first line (the column header)
-        tail -n +2 "${filePath}" >"./temp/l_argument_sum_pre.csv"
+        tail -n +2 "${filePath}" >"./temp/s_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Splitting data..."
-        # awk -F';' '{sum[$2]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum_pre.csv" >"./temp/s_argument_sum.csv"
-        cut -d";" -f1,2,5 "./temp/l_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
+        # awk -F';' '{sum[$2]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/s_argument_sum_pre.csv" >"./temp/s_argument_sum.csv"
+        cut -d";" -f1,2,5 "./temp/s_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
         # split the file in tinier file to make the C file allocation lighter
         lines_in_chunk=1000000
         split -l ${lines_in_chunk} "./temp/s_argument_splitted.csv" ./temp/s_argument_sum_splitted_
