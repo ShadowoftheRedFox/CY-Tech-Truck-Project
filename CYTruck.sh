@@ -7,6 +7,7 @@
 #? get all argument starting from the n one: ${@:n}
 # always ignore the first line if the csv file
 # CSV: Route ID;Step ID;Town A;Town B;Distance;Driver name
+#TODO count only the shell execution time
 
 # function that return a message before exiting the script
 ExitDisplay() {
@@ -16,14 +17,17 @@ ExitDisplay() {
         echo -e ${otherArgs}
     fi
     # print the execution time from the first arg
-    # endTimeCount=$(date +%s.%N)
-    endTimeCount=$(date +%s)
-
-    # calculate the execution time
-    # runtime=$(echo "${endTimeCount} - ${startTimeCount}" | bc)
-    runtime=$(echo $((endTimeCount - startTimeCount)))
-    # display it
-    echo "Execution time:" ${runtime}"s"
+    if [ ${startTime} == 0 ]; then
+        echo "Execution time: 0s"
+    else
+        # endTimeCount=$(date +%s.%N)
+        endTimeCount=$(date +%s)
+        # calculate the execution time
+        # runtime=$(echo "${endTimeCount} - ${startTimeCount}" | bc)
+        runtime=$(echo $((${endTimeCount} - ${startTimeCount})))
+        # display it
+        echo "Execution time:" ${runtime}"s"
+    fi
 
     # use to wait before exiting the script
     read -p "Press any key to exit"
@@ -34,8 +38,15 @@ ExitDisplay() {
 # set tab title to what we want
 echo -en "\033]0;CYTruck\a"
 
-# todo compile the program if not done
-# todo check file compilation result
+# compile the program if not done
+if [ ! -d "./progc/bin" ] || [ ! -f "./progc/bin/CYTruck" ]; then
+    # TODO change the path to just the command name
+    compilation=$("C:/Program Files (x86)/GnuWin32/bin/make.exe" -f "./progc/Makefile")
+    # check file compilation result
+    if [ $? != 0 ]; then
+        ExitDisplay 0 "${compilation}"
+    fi
+fi
 
 # check if the images dir exist
 if [ ! -d 'images' ]; then
@@ -116,7 +127,23 @@ for arg in $*; do
         # need to sort by route id or driver name
         # count the number of different routes
         # output the top 10 with number of routes and names
-        # make teh graph
+        # make the graph
+
+        # remove the first line (the column header)
+        tail -n +2 "${filePath}" >"./temp/d1_argument_sum_pre.csv"
+        # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
+        echo "Summing drivers routes..."
+        # if step ID is 1, add the route to the driver names, then at the end, print the name and it's route amount
+        awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/d1_argument_sum_pre.csv" >"./temp/d1_argument_sum.csv"
+        # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
+        echo "Sorting drivers routes..."
+        sort -t';' -k 1 -n -r "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
+        echo "Getting the top drivers..."
+        # get the top 10 longest route
+        head -n 10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
+        # cat "./temp/d1_argument_top10.csv" # to show the top 10
+
+        #todo graph
         ;;
     "-d2")
         echo "d2 arg found"
@@ -124,6 +151,21 @@ for arg in $*; do
         # then add each distance
         # output the top 10 ones with distances to make the graph
         # make the graph
+
+        # remove the first line (the column header)
+        tail -n +2 "${filePath}" >"./temp/d2_argument_sum_pre.csv"
+        # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
+        echo "Summing drivers routes..."
+        awk -F';' '{sum[$6]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' "./temp/d2_argument_sum_pre.csv" >"./temp/d2_argument_sum.csv" # TODO ask teh theacher what is a route (step or whole)
+        # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
+        echo "Sorting drivers routes..."
+        sort -t';' -k 1 -n -r "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
+        echo "Sorting drivers..."
+        # get the top 10 longest route
+        head -n 10 "./temp/sorted_d2_argument_sum.csv" >"./temp/d2_argument_top10.csv"
+        # cat "./temp/d2_argument_top10.csv" # to show the top 10
+
+        #todo graph
         ;;
     "-l")
         echo "l arg found"
@@ -134,49 +176,28 @@ for arg in $*; do
 
         # remove the first line (the column header)
         tail -n +2 "${filePath}" >"./temp/l_argument_sum_pre.csv"
-        ################################# 10s constant #############################################
-        # # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
-        # echo "Summing route's length..."
-        # awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum_pre.csv" >"./temp/l_argument_sum.csv"
-        # # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
-        # echo "Sorting route's length..."
-        # sort -t';' -k 2 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
-        # echo "Sorting route's ID..."
-        # # get the top 10 longest route
-        # head -n 10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
-        # # and sort them by id
-        # sort -t';' -k 1 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv" # TODO move to demo dir later
-        # # cat "./temp/l_argument_top10_finish.csv" # to show the top 10
-        ###########################################################################################
-
-        ############################### between 8s and 14s ########################################
-        split -l 800000 "./temp/l_argument_sum_pre.csv" ./temp/l_argument_chunk_
-        # Process each chunk in parallel
-        for chunk_file in ./temp/l_argument_chunk_*; do
-            # Use awk to calculate the sum of values for each ID in the chunk
-            awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "${chunk_file}" >"${chunk_file}.csv" &
-        done
-        # Wait for all background processes to finish
-        wait
-
-        # Concatenate the results from all chunks
-        cat ./temp/l_argument_chunk_*.csv >./temp/l_argument_sum.csv
-
-        # awk the last values
-        # awk -F';' '{sum[$1]+=$2} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum.csv" >"./temp/l_argument_sum_all.csv"
-
+        # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
+        echo "Summing route's length..."
+        awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' "./temp/l_argument_sum_pre.csv" >"./temp/l_argument_sum.csv"
+        # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting route's length..."
-        sort -t';' -k 2 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
+        sort -t';' -k 1 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
         echo "Sorting route's ID..."
         # get the top 10 longest route
         head -n 10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
         # and sort them by id
-        sort -t';' -k 1 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv" # TODO move to demo dir later
-        # cat "./temp/l_argument_top10_finish.csv" # to show the top 10
-        ##########################################################################################
+        sort -t';' -k 2 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv" # TODO move to demo dir later
+        # to show the top 10
+        # cat "./temp/l_argument_top10_finish.csv"
 
         echo "Creating graph..."
-        #TODO graph
+
+        # copy the l_script in temp dir to edit
+        cp "./progc/gnuplot/l_script.gnu" "./temp/l_script.gnu"
+
+        # TODO move output to images dir
+        #TODO change the path to just the command name
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./temp/l_script.gnu
         ;;
     "-t")
         echo "t arg found"
@@ -188,6 +209,13 @@ for arg in $*; do
         # make the graph
 
         cut ${filePath} -d';' -f1,3,4,6 >"./temp/t_argument.csv"
+        cut "./temp/t_argument.csv" -d";" -f2 >"./temp/t_argument_townA.txt"
+        awk -F';' '{sum[$3]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townA.txt" >"./temp/t_argument_sum_pre_town_a.csv"
+        cut "./temp/t_argument.csv" -d";" -f3 >"./temp/t_argument_townB.txt"
+        awk -F';' '{sum[$4]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townB.txt" >"./temp/t_argument_sum_pre_town_b.csv"
+        echo "Calculating town travel number..."
+        sort -t';' -k 1 -n -r "./temp/t_argument_townA.txt" >"./temp/sorted_d1_argument_sum.csv"
+        echo "Sorting towns..."
         ;;
     "-s")
         echo "s arg found"
@@ -197,8 +225,23 @@ for arg in $*; do
         # get the min, the max and average
         # make the graph
 
-        cut ${filePath} -d';' -f1,5 >"./temp/s_argument.csv"
-
+        # remove the first line (the column header)
+        tail -n +2 "${filePath}" >"./temp/l_argument_sum_pre.csv"
+        # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
+        echo "Splitting data..."
+        # awk -F';' '{sum[$2]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/l_argument_sum_pre.csv" >"./temp/s_argument_sum.csv"
+        cut -d";" -f1,2,5 "./temp/l_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
+        # split the file in tinier file to make the C file allocation lighter
+        lines_in_chunk=1000000
+        split -l ${lines_in_chunk} "./temp/s_argument_splitted.csv" ./temp/s_argument_sum_splitted_
+        # TODO use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
+        ./progc/bin/CYTruck "s" temp/s_argument_sum_splitted_* "temp/s_argument_result.txt"
+        # check return result
+        CYTruckReturnResult=$?
+        # display error if the reutnr code is not 0
+        if [ ${CYTruckReturnResult} != 0 ]; then
+            ExitDisplay 0 "Something went wrong with the code.\nError code:" ${CYTruckReturnResult}
+        fi
         ;;
     *) echo $arg ": found" ;;
     esac
