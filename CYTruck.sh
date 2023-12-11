@@ -206,7 +206,7 @@ for arg in $*; do
 
         # TODO move output to images dir
         # TODO change the path to just the command name
-        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/temp/l_script.gnu
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/l_script.gnu
         ;;
     "-t")
         echo "t arg found"
