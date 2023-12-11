@@ -15,8 +15,8 @@ set datafile separator ';'
 set xrange [0<*:*]
 
 # set a tick every 1 units
-set ytics 1
-set xtics autofreq
+set ytics 1 nomirror
+set xtics autofreq nomirror
 
 # linestyle for the grid
 set style line 100 lc rgb "grey" lw 0.5

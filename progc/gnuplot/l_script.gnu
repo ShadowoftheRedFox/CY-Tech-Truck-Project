@@ -15,7 +15,7 @@ set datafile separator ';'
 set yrange [0<*<2000:*] # [0:2000] 
 
 # set a tick every 100 units
-set ytics 100
+set ytics autofreq
 # set a tick every 1 units
 set xtics 1 nomirror
 

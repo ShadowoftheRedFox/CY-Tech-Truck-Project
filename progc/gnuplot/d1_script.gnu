@@ -11,12 +11,12 @@ set terminal pngcairo enhanced font "arial,20" size 1920,1080
 # tell that the data separator is ; in our file
 set datafile separator ';'
 
-# to start from 0 to 2000, [0:*] is from 0 to auto
+# to start from 0 to auto, [0<*:*] is from 0 minimal auto to auto
 set xrange [0<*:*]
 
 # set a tick every 1 units
-set ytics 1
-set xtics autofreq
+set ytics 1 nomirror
+set xtics autofreq nomirror
 
 # linestyle for the grid
 set style line 100 lc rgb "grey" lw 0.5
@@ -27,7 +27,6 @@ set grid ls 100
 set style fill solid 1.0 border lt -1
 
 # configure boxes style width
-# set boxwidth 0.5 relativ
 myBoxWidth = 0.8
 myOffset = 0.5
 set offsets 0,0,myOffset-myBoxWidth/2.,myOffset
