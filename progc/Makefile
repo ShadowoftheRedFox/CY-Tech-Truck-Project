@@ -1,6 +1,6 @@
-# defines compiler
-# TODO change the path to just the command name
-CC = C:/MinGW/bin/gcc.exe
+#!bin/make
+# defines compiler 
+CC = gcc
 # defines where the files are
 FILES_DIR = progc
 # defines build directory 
