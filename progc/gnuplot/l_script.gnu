@@ -2,7 +2,7 @@
 set title 'Top 10 of the longest routes'
 set xlabel 'Route ID'
 set ylabel 'Distances (km)'
-set output './temp/l_image.png'
+set output './images/l_image.png'
 set key noenhanced
 
 # set so it use pngcairo, with the font arial in 0.8 size

@@ -2,7 +2,7 @@
 set title 'Top 10 drivers with the most travels'
 set xlabel 'Travels amount'
 set ylabel 'Name'
-set output './temp/d1_image.png'
+set output './images/d1_image.png'
 set key noenhanced
 
 # set so it use pngcairo, with the font arial in 0.8 size

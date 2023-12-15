@@ -2,7 +2,7 @@
 set title 'Top 10 drivers with the most distance traveled'
 set xlabel 'Distance traveled (km)'
 set ylabel 'Name'
-set output './temp/d2_image.png'
+set output './images/d2_image.png'
 set key noenhanced
 
 # set so it use pngcairo, with the font arial in 0.8 size
