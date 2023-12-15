@@ -8,6 +8,7 @@
 # always ignore the first line if the csv file
 # CSV: Route ID;Step ID;Town A;Town B;Distance;Driver name
 #TODO count only the shell execution time
+#TODO check if make, gcc and gnuplot are installed
 
 # function that return a message before exiting the script
 ExitDisplay() {
@@ -22,7 +23,7 @@ ExitDisplay() {
     else
         # endTimeCount=$(date +%s.%N)
         endTimeCount=$(date +%s)
-        # calculate the execution time
+        # calculate the execution
         # runtime=$(echo "${endTimeCount} - ${startTimeCount}" | bc)
         runtime=$(echo $((${endTimeCount} - ${startTimeCount})))
         # display it
@@ -41,10 +42,10 @@ echo -en "\033]0;CYTruck\a"
 # compile the program if not done
 if [ ! -d "./progc/bin" ] || [ ! -f "./progc/bin/CYTruck" ]; then
     # TODO change the path to just the command name
-    compilation=$("C:/Program Files (x86)/GnuWin32/bin/make.exe" -f "./progc/Makefile")
+    compilation=$(make -f "./progc/Makefile")
     # check file compilation result
     if [ $? != 0 ]; then
-        ExitDisplay 0 "${compilation}"
+        ExitDisplay 0 "Error during compilation:\n${compilation}"
     fi
 fi
 
@@ -73,8 +74,21 @@ else
     echo 'The temp directory exists.'
 fi
 
-# todo check: data dir, temp dir, demo dir and images dir
-
+# todo check: data dir, demo dir
+if [ -d "./data" ]; then
+    echo "Directory \"data\" exists."
+else
+    #todo create the folder
+    mkdir -p 'data'
+    echo 'Created data directory.'
+fi
+if [ -d "/demo/dir/" ]; then
+    echo "Directory \"demo\" exists."
+else
+    #todo create the folder
+    mkdir -p 'demo'
+    echo 'Created demo directory'
+fi
 # start to count the time
 # startTimeCount=$(date +%s.%N)
 startTimeCount=$(date +%s)
@@ -129,12 +143,10 @@ for arg in $*; do
         # output the top 10 with number of routes and names
         # make the graph
 
-        # remove the first line (the column header)
-        tail -n +2 "${filePath}" >"./temp/d1_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing drivers routes..."
         # if step ID is 1, add the route to the driver names, then at the end, print the name and it's route amount
-        awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%s;%d\n", i, sum[i]}' "./temp/d1_argument_sum_pre.csv" >"./temp/d1_argument_sum.csv"
+        awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%s;%d\n", i, sum[i]}' ${filePath} >"./temp/d1_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting drivers routes..."
         sort -t';' -k 2 -n "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
@@ -145,7 +157,6 @@ for arg in $*; do
 
         echo "Creating graph..."
 
-        # TODO move output to images dir
         # TODO change the path to just the command name
         "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/d1_script.gnu
         ;;
@@ -156,11 +167,9 @@ for arg in $*; do
         # output the top 10 ones with distances to make the graph
         # make the graph
 
-        # remove the first line (the column header)
-        tail -n +2 "${filePath}" >"./temp/d2_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing drivers routes..."
-        awk -F';' '{sum[$6]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/d2_argument_sum_pre.csv" >"./temp/d2_argument_sum.csv" # TODO ask teh theacher what is a route (step or whole)
+        awk -F';' '{sum[$6]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' ${filePath} >"./temp/d2_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting drivers routes..."
         sort -t';' -k 2 -n "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
@@ -170,12 +179,6 @@ for arg in $*; do
         # cat "./temp/d2_argument_top10.csv" # to show the top 10
 
         echo "Creating graph..."
-
-        # FIXME necessary?
-        # copy the d2_script in temp dir to edit
-        cp "./progc/gnuplot/d2_script.gnu" "./temp/d2_script.gnu"
-
-        # TODO move output to images dir
         # TODO change the path to just the command name
         "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/d2_script.gnu
         ;;
@@ -186,11 +189,9 @@ for arg in $*; do
         # output the top 10 with distances and ID
         # make the graph
 
-        # remove the first line (the column header)
-        tail -n +2 "${filePath}" >"./temp/l_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing route's length..."
-        awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' "./temp/l_argument_sum_pre.csv" >"./temp/l_argument_sum.csv"
+        awk -F';' '{sum[$1]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' ${filePath} >"./temp/l_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, ad reversed to have the longest on top
         echo "Sorting route's length..."
         sort -t';' -k 1 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
@@ -204,7 +205,6 @@ for arg in $*; do
 
         echo "Creating graph..."
 
-        # TODO move output to images dir
         # TODO change the path to just the command name
         "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/l_script.gnu
         ;;
@@ -217,13 +217,14 @@ for arg in $*; do
         # output the top 10 with names, times crossed and number of different drivers that went by
         # make the graph
 
+        #FIXME wtf is happening here
         cut ${filePath} -d';' -f1,3,4,6 >"./temp/t_argument.csv"
         cut "./temp/t_argument.csv" -d";" -f2 >"./temp/t_argument_townA.txt"
         awk -F';' '{sum[$3]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townA.txt" >"./temp/t_argument_sum_pre_town_a.csv"
         cut "./temp/t_argument.csv" -d";" -f3 >"./temp/t_argument_townB.txt"
         awk -F';' '{sum[$4]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townB.txt" >"./temp/t_argument_sum_pre_town_b.csv"
         echo "Calculating town travel number..."
-        sort -t';' -k 1 -n -r "./temp/t_argument_townA.txt" >"./temp/sorted_d1_argument_sum.csv"
+        sort -t';' -k 1 -n -r "./temp/t_argument_townA.txt" >"./temp/sorted_t_argument_sum.csv"
         echo "Sorting towns..."
         ;;
     "-s")
@@ -235,22 +236,40 @@ for arg in $*; do
         # make the graph
 
         # remove the first line (the column header)
-        tail -n +2 "${filePath}" >"./temp/s_argument_sum_pre.csv"
+        #FIXME SLOW AF
+        tail -n +2 ${filePath} >"./temp/s_argument_sum_pre.csv"
+        # sed -i '1d' "${filePath}" >"./temp/s_argument_sum_pre.csv"
+        # awk 'NR>1' "${filePath}" >"./temp/s_argument_sum_pre.csv"
+        # gawk -i inplace 'NR>1' "${filePath}" >"./temp/s_argument_sum_pre.csv"
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Splitting data..."
-        # awk -F';' '{sum[$2]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' "./temp/s_argument_sum_pre.csv" >"./temp/s_argument_sum.csv"
-        cut -d";" -f1,2,5 "./temp/s_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
+        cut -d";" -f1,5 "./temp/s_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
         # split the file in tinier file to make the C file allocation lighter
         lines_in_chunk=1000000
         split -l ${lines_in_chunk} "./temp/s_argument_splitted.csv" ./temp/s_argument_sum_splitted_
-        # TODO use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
-        ./progc/bin/CYTruck "s" temp/s_argument_sum_splitted_* "temp/s_argument_result.txt"
+
+        # use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
+        ./progc/bin/CYTruck "s" ./temp/s_argument_sum_splitted_* "./temp/s_argument_result.txt"
+
         # check return result
         CYTruckReturnResult=$?
         # display error if the reutnr code is not 0
         if [ ${CYTruckReturnResult} != 0 ]; then
-            ExitDisplay 0 "Something went wrong with the code.\nError code:" ${CYTruckReturnResult}
+            ExitDisplay ${startTimeCount} "Something went wrong with the code.\nError code:" ${CYTruckReturnResult}
         fi
+
+        # check the existance of the ouput file
+        if [ ! -f "./temp/s_argument_result.txt" ]; then
+            ExitDisplay ${startTimeCount} "Can not find the ouput file."
+        fi
+
+        # cat "./temp/s_argument_result.txt"
+
+        echo "Creating graph..."
+
+        # TODO change the path to just the command name
+        "C:/Program Files/gnuplot/bin/gnuplot.exe" ./progc/gnuplot/s_script.gnu
+        # TODO chek the result compared to the shell version(shell version is just for check, needs to be deleted after)
         ;;
     *) echo $arg ": found" ;;
     esac
