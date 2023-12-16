@@ -1,8 +1,9 @@
 # CY Tech Truck Project
 
 The CY Tech project of 2023/2024.
+We use in this project [GNUPlot](http://www.gnuplot.info/) to plot the images, [GNU Make)](https://www.gnu.org/software/make/) to help compile the code, and [GNU GCC](https://gcc.gnu.org/install/download.html) to compile the code. Make sure they are installed before using the shell script. *We will check they are installed anyway.* 
 
-## Summary
+## Table of content
 
 - [The steps to compile the executable](#compilation)
 - [Explain the goal of each folders](#what-is-what)
@@ -10,7 +11,7 @@ The CY Tech project of 2023/2024.
 - [List of things that are to be added soon](#todo)
 - [The limits, unimplemented or known bugs](#functionnality-limits)
 - [Show what has been done when](#planning)
-- [Add large CSV file to teh repository](#add-large-csv-file-to-the-repository)
+- [Add large CSV file to the repository](#add-large-csv-file-to-the-repository)
 
 ## Compilation
 
@@ -57,7 +58,7 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [ ] PDF document for the task shared and worked on
 - [ ] Planning realisation
 - [ ] The whole project... 
-- [ ] Add another shell file to call the clean method of the Makefile file
+- [ ] Add another shell file to call the clean method of the Makefile file (check [Bonus](#bonus))
 - [x] Check if "-h" is in the arguments and display a help message
 - [x] Check if the first argument is a csv file that exist
 - [x] Create images directory if not present
@@ -66,13 +67,13 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [x] Display the execution time even in ExitDisplay
 - [x] -l has its data ready, between 8s and 14s (or 10s)
 - [x] do the graph for -l
-- [ ] finish C part for -s
+- [x] finish C part for -s
 - [ ] finish graph part for -s
 - [ ] finish C part for -t
 - [ ] finish graph part for -t
-- [ ] finish graph part for -d1
-- [ ] finish graph part for -d2
-- [ ] rename every absolute path to executable in command 
+- [x] finish graph part for -d1
+- [x] finish graph part for -d2
+- [x] rename every absolute path to executable in command 
 - [ ] change every temp file that should be in demo to demo 
 - [ ] make a good looking folder in demo with each necessary file in it 
 
@@ -103,7 +104,10 @@ None yet
 - 03/12/2023: Started the shell file and makefile, added data.csv to the repo (Git LFS) (Hugo).
 - 04/12/2023: Started the data gathering for -l, -s and -t. -l is working between 8 and 14s (Hugo, Bilel, Prince). Started the C file (Bilel).
 - 07/12/2023: Finished -l (Hugo), corrected data for -s (Hugo). Continued the C file for -s (Bilel, Hugo). Made gnuplot script for -s (Hugo).
+- 15/12/2023: Finished graph for -d1, -d2, -l and -s (though not good looking) (Hugo). Optimized shell (Hugo) and C script (Bilel). 
 
 ## Add large CSV file to the repository
 
 You need to install [Git LFS](https://docs.github.com/fr/repositories/working-with-files/managing-large-files/installing-git-large-file-storage) (Github Large File System) and follow [this step in their documentation](https://docs.github.com/fr/repositories/working-with-files/managing-large-files/configuring-git-large-file-storage).
+
+To download the [data.csv file](./data/data.csv), you need to go on the GitHub website and download the raw file, or you can use this [link](https://github.com/ShadowoftheRedFox/CY-Tech-Truck-Project/raw/main/data/data.csv?download=) directly.
