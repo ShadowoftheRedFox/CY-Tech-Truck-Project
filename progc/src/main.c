@@ -1,17 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "./AVL_s.h"
+#include "./AVL_t.h"
 #include "./main.h"
-#include "./AVL.h"
 
-//TENTATIVE DE FAIRE UNE PARTIE DE LA MERDE EN SHELL
-
+/*
+TODO: check if argument valid, check alloc result, try to change all types in errorcode for easier error tracking
+*/
 typedef struct town {
     int departure_number;
     int arrival_number;
     int travel_number;
     char name[NAME_ARRAY_SIZE];
 }town;
+
+void check_driver() {
+
+}
 
 //calculation of the number of travels for each town
 int calculationtravels(FILE* t_argument) {
@@ -38,10 +44,82 @@ int calculationtravels(FILE* t_argument) {
 }
 
 ErrorCode TArgumentProcess(int argc, char const* argv[]) {
-    // TODO
+    // TODO t argument C code
+
+    printf("Begin t process...\n"); // TEST
+
+    // data to process
+    char* line = malloc(sizeof(char) * NAME_ARRAY_SIZE);
+    char town_name_A[TOWN_NAME_LENGTH], town_name_B[TOWN_NAME_LENGTH];
+    char driver_name[DRIVER_NAME_LENGTH];
+    int route_id;
+    // useless but needed to read line
+    float distance;
+    int step_id;
+
+    // create the AVL with a city name that will never appear
+    AVL_t* avl = createAVL_t("Town_Test_0");
+
+    // read each file
+    for (int i = 2; i < argc - 1; i++) {
+        printf("Data source file: %s\n", argv[i]); // TEST
+        FILE* sourceFile = fopen(argv[i], "r");
+
+        if (sourceFile == NULL) {
+            perror("Error opening file");
+            return CODE_FILE_OPEN_ERROR;
+        }
+
+        // assuming the first line contains headers 
+        fgets(line, sizeof(char) * (NAME_ARRAY_SIZE), sourceFile);
+        // process each line of the CSV file
+
+        while (!feof(sourceFile)) {
+            fgets(line, sizeof(char) * (NAME_ARRAY_SIZE), sourceFile);
+            if (ferror(sourceFile)) {
+                return CODE_FILE_READ_ERROR;
+            }
+
+            // parse the data from the line
+            sscanf(line, "%d;%d;%50[^;];%50[^;];%f;%[^\n]", &route_id, &step_id, town_name_A, town_name_B, &distance, driver_name);
+
+            // TEST
+            // printf("ROUTE_ID: %d,\t TOWN A: %s,\t TOWN B: %s,\t DRIVER: %s\n", route_id, town_name_A, town_name_B, driver_name);
+
+            // if the names are the same in the same step
+            if (strcmp(town_name_A, town_name_B) == 0) {
+                insertAVL_t(&avl, town_name_A, &(avl->balance));
+            } else {
+                insertAVL_t(&avl, town_name_A, &(avl->balance));
+                insertAVL_t(&avl, town_name_B, &(avl->balance));
+            }
+        }
+
+        fclose(sourceFile);
+    }
+
+    // travel infix the avl, and fprintf the ROUTE_ID;TIMES CROSSED;DRIVER CROSSED
+    printf("Output file: %s\n", argv[argc - 1]);
+
+    AVL_t* temp = avl;
+    // get the top 10 city in crossed amount
+    while (height_t(temp) > 11) {
+        printf("%d\n", height_t(temp));
+        temp = temp->r;
+    }
+    printf("%d\n", height_t(temp));
+
+    FILE* output_file = fopen(argv[argc - 1], "w+");
+    if (output_file == NULL) {
+        // failed to save
+        printf("Failed to create the output file\n");
+        return CODE_FILE_CREATE_ERROR;
+    }
+
+    return CODE_OK;
 }
 
-ErrorCode FillOutputFile(FILE* handle, AVL* input) {
+ErrorCode FillOutputFile(FILE* handle, AVL_s* input) {
     // file handle invalid or invalid AVL
     if (handle == NULL || input == NULL) {
         return CODE_ARG_INVALID;
@@ -71,7 +149,7 @@ ErrorCode SArgumentProcess(int argc, char const* argv[]) {
     float distance;
 
     // create the AVL starting from route ID -1 since ID are all positiv
-    AVL* avl = createAVL(-1, 0.0);
+    AVL_s* avl = createAVL_s(-1, 0.0);
 
     // read each file
     for (int i = 2; i < argc - 1; i++) {
@@ -85,8 +163,8 @@ ErrorCode SArgumentProcess(int argc, char const* argv[]) {
 
         // assuming the first line do not contains headers 
         // process each line of the CSV file
+
         while (!feof(sourceFile)) {
-            // printf("3 ");
             fgets(line, sizeof(char) * NAME_ARRAY_SIZE, sourceFile);
             if (ferror(sourceFile)) {
                 return CODE_FILE_READ_ERROR;
@@ -99,7 +177,7 @@ ErrorCode SArgumentProcess(int argc, char const* argv[]) {
             // printf("ROUTE_ID: %d, DISTANCE: %.3f\n", route_id, distance);
 
             // push everything in a AVL 
-            insertAVL(&avl, route_id, distance, &(avl->balance));
+            insertAVL_s(&avl, route_id, distance, &(avl->balance));
         }
 
         fclose(sourceFile);
@@ -129,7 +207,7 @@ ErrorCode SArgumentProcess(int argc, char const* argv[]) {
     // close the file handle
     fclose(output_file);
     // free the avl
-    freeAVL(avl);
+    freeAVL_s(avl);
     // free the line buffer
     free(line);
 
