@@ -1,8 +1,10 @@
 #ifndef HEADER_MAIN
 #define HEADER_MAIN
 
+// max size for a name in the data
 #define NAME_ARRAY_SIZE 100
 
+// error code, labelized
 typedef enum ErrorCode {
     CODE_OK,
     CODE_ARG_NULL,
