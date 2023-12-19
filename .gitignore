@@ -58,3 +58,5 @@ dkms.conf
 *test.csv
 # temp folder
 /temp/*
+# any .old file, which are copy of old version
+**/*.old
