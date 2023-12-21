@@ -124,8 +124,7 @@ fi
 
 # check if gnuplot is installed
 if ! command -v gnuplot >/dev/null 2>&1; then
-    echo "no gnuplot (no exit)"
-    # ExitDisplay 0 "gnuplot could not be found"
+    ExitDisplay 0 "gnuplot could not be found"
 fi
 
 # to check each parameters option
@@ -166,10 +165,10 @@ for arg in $*; do
         awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%s;%d\n", i, sum[i]}' ${filePath} >"./temp/d1_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, and reversed to have the longest on top
         echo "Sorting drivers routes..."
-        sort -t';' -k2nr "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
+        sort -t';' -k2n "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
         echo "Getting the top drivers..."
         # get the top 10 longest route
-        head -10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
+        tail -n 10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
         # cat "./temp/d1_argument_top10.csv" # to show the top 10
 
         echo "Creating graph..."
@@ -184,10 +183,10 @@ for arg in $*; do
 
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing drivers routes..."
-        awk -F';' 'BEGIN{sum[$6]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' ${filePath} >"./temp/d2_argument_sum.csv"
+        awk -F';' 'NR>1{sum[$6]+=$5} END{for(i in sum) printf "%s;%.3f\n", i, sum[i]}' ${filePath} >"./temp/d2_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, and reversed to have the longest on top
         echo "Sorting drivers routes..."
-        sort -t';' -k 2 -n "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
+        sort -t';' -k2n "./temp/d2_argument_sum.csv" >"./temp/sorted_d2_argument_sum.csv"
         echo "Sorting drivers..."
         # get the top 10 longest route
         tail -n 10 "./temp/sorted_d2_argument_sum.csv" >"./temp/d2_argument_top10.csv"
@@ -205,15 +204,15 @@ for arg in $*; do
 
         # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
         echo "Summing route's length..."
-        awk -F';' 'BEGIN{sum[$1]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' ${filePath} >"./temp/l_argument_sum.csv"
+        awk -F';' 'NR>1{sum[$1]+=$5} END{for(i in sum) printf "%.3f;%s\n", sum[i], i}' ${filePath} >"./temp/l_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, and reversed to have the longest on top
         echo "Sorting route's length..."
-        sort -t';' -k 1 -n -r "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
+        sort -t';' -k1nr "./temp/l_argument_sum.csv" >"./temp/sorted_l_argument_sum.csv"
         echo "Sorting route's ID..."
         # get the top 10 longest route
-        head -n 10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
+        head -10 "./temp/sorted_l_argument_sum.csv" >"./temp/l_argument_top10.csv"
         # and sort them by id
-        sort -t';' -k 2 -n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv"
+        sort -t';' -k2n "./temp/l_argument_top10.csv" >"./temp/l_argument_top10_finish.csv"
         # to show the top 10
         # cat "./temp/l_argument_top10_finish.csv"
 
@@ -246,6 +245,23 @@ for arg in $*; do
         # sort -t';' -k 1 -n -r "./temp/t_argument_townA.txt" >"./temp/sorted_t_argument_sum.csv"
         echo "Sorting towns..."
         ./progc/bin/CYTruck "t" ${filePath} "./temp/t_result.txt"
+
+        # check return result
+        CYTruckReturnResult=$?
+        # display error if the reutnr code is not 0
+        if [ ${CYTruckReturnResult} != 0 ]; then
+            ExitDisplay ${startTimeCount} "Something went wrong with the code.\nError code:" ${CYTruckReturnResult}
+        fi
+
+        # check the existance of the ouput file
+        if [ ! -f "./temp/t_argument_result.txt" ]; then
+            ExitDisplay ${startTimeCount} "Can not find the ouput file."
+        fi
+
+        # cat "./temp/t_argument_result.txt"
+
+        echo "Creating graph..."
+        gnuplot ./progc/gnuplot/t_script.gnu
         ;;
     "-s")
         echo "s arg found"
