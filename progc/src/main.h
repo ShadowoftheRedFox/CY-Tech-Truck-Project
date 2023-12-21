@@ -2,7 +2,9 @@
 #define HEADER_MAIN
 
 // max size for a name in the data
-#define NAME_ARRAY_SIZE 100
+#define LINE_LENGTH 100
+#define TOWN_NAME_LENGTH 50
+#define DRIVER_NAME_LENGTH 50
 
 // error code, labelized
 typedef enum ErrorCode {
