@@ -83,7 +83,7 @@ The whole program start with [CYTruck.sh](./CYTruck.sh) and its arguments. The f
 - [ ] Read all csv file from a dir and use them as input (-D)
 - [ ] specify type of ouput? (png, pdf, csv...) (-o)
 - [ ] option to compress result in a archive file (possibility to choose tar, gz, zip...) (-a)
-- [ ] argument to clean temp at the end when executed (-c)
+- [x] argument to clean temp at the end when executed (-c)
 - [ ] Display the timing but animated (on the last line or on one line, current display may only be for testing)
 
 ## Functionnality limits
