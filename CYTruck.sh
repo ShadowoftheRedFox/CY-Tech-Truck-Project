@@ -5,13 +5,14 @@
 #? argument list: $*
 #? argument 0 2 and 4: $0 $2 $4
 #? get all argument starting from the n one: ${@:n}
-# always ignore the first line of the csv file
-# CSV type: Route ID;Step ID;Town A;Town B;Distance;Driver name
+#? always ignore the first line of the csv file
+#? CSV type: Route ID;Step ID;Town A;Town B;Distance;Driver name
 # TODO count only the shell execution time
 # TODO re read the pdf to check if everything is being done well and has the right place
 
 # function that return a message before exiting the script, showing the time elapsed
 ExitDisplay() {
+    echo ""
     startTime=$1
     otherArgs=${@:2}
     if [ -n "${otherArgs}" ]; then
@@ -42,22 +43,6 @@ echo -en "\033]0;CYTruck\a"
 # cd to the absolute path of the parent folder containing this script
 # to make sure all relativ script work as intended
 cd "$(dirname "$0")"
-
-# compile the program if not done
-if [ ! -d "./progc/bin" ] || [ ! -f "./progc/bin/CYTruck" ]; then
-    # check if make and gcc are installed
-    if ! command -v make >/dev/null 2>&1; then
-        ExitDisplay 0 "make could not be found"
-    fi
-    if ! command -v gcc >/dev/null 2>&1; then
-        ExitDisplay 0 "gcc could not be found"
-    fi
-    compilation=$(make -f "./progc/Makefile")
-    # check file compilation result
-    if [ $? != 0 ]; then
-        ExitDisplay 0 "Error during compilation:\n${compilation}"
-    fi
-fi
 
 # create the images folder if it isn't done already
 if [ ! -d 'images' ]; then
@@ -105,6 +90,46 @@ if [ $# == 0 ]; then
     ExitDisplay ${startTimeCount} "No argument found. Use \"-h\" to get help."
 fi
 
+# to check every argument who don't need a csv file
+for arg in $*; do
+    case $arg in
+    "-h")
+        # TODO update with bonus commands (clean)
+        ExitDisplay ${startTimeCount} "Help:\n
+- path :\t The path to a CSV file with the data. It must be the first argument.\n
+- \"-h\" :\t Will show the help message, which is the list of arguments and what they do. It will not run any other argument.\n
+- \"-d1\":\t Show the top 10 drivers with the most journeys.\n
+- \"-d2\":\t Show the top 10 drivers with the longest distance travelled.\n
+- \"-l\" :\t Show the top 10 longest routes.\n
+- \"-t\" :\t Show the top 10 most crossed cities with how many different drivers cross it.\n
+- \"-s\" :\t Min, max and average distances for every route."
+        ;;
+    "-c" | "-clean")
+        echo "Cleaning compiled files..."
+        make -f ./progc/Makefile clean
+        ExitDisplay ${startTimeCount} "Done."
+        ;;
+    esac
+done
+
+# compile the program if not done
+if [ ! -d "./progc/bin" ] || [ ! -f "./progc/bin/CYTruck" ]; then
+    # check if make and gcc are installed
+    if ! command -v make >/dev/null 2>&1; then
+        ExitDisplay 0 "make could not be found"
+    fi
+    if ! command -v gcc >/dev/null 2>&1; then
+        ExitDisplay 0 "gcc could not be found"
+    fi
+    make -f "./progc/Makefile" builddir
+    make -f "./progc/Makefile" objdir
+    compilation=$(make -f "./progc/Makefile")
+    # check file compilation result
+    if [ $? != 0 ]; then
+        ExitDisplay 0 "Error during compilation:\n${compilation}"
+    fi
+fi
+
 # path and name of the supposed csv file
 filePath=$1
 
@@ -139,18 +164,6 @@ for arg in $*; do
         sort -t';' -k1n -k2n "./temp/test_result.txt" >"./temp/sorted_test_sorted.txt"
 
         ExitDisplay ${startTimeCount} "End of the test."
-        ;;
-    "-h")
-        # to check if -h is in the parameters
-        # quit if yes
-        ExitDisplay ${startTimeCount} "Help:\n
-- path :\t The path to a CSV file with the data. It must be the first argument.\n
-- \"-h\" :\t Will show the help message, which is the list of arguments and what they do. It will not run any other argument.\n
-- \"-d1\":\t Show the top 10 drivers with the most journeys.\n
-- \"-d2\":\t Show the top 10 drivers with the longest distance travelled.\n
-- \"-l\" :\t Show the top 10 longest routes.\n
-- \"-t\" :\t Show the top 10 most crossed cities with how many different drivers cross it.\n
-- \"-s\" :\t Min, max and average distances for every route."
         ;;
     "-d1")
         echo "d1 arg found"
@@ -228,21 +241,6 @@ for arg in $*; do
         # output the top 10 with names, times crossed and number of different drivers that went by
         # make the graph
 
-        #FIXME wtf is happening here
-        # cut ${filePath} -d';' -f1,3,4,6 >"./temp/t_argument.csv"
-        # cut "./temp/t_argument.csv" -d";" -f2 >"./temp/t_argument_townA.txt"
-        # awk -F';' '{sum[$3]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townA.txt" >"./temp/t_argument_sum_pre_town_a.csv"
-        # cut "./temp/t_argument.csv" -d";" -f3 >"./temp/t_argument_townB.txt"
-        # awk -F';' '{sum[$4]+=1} END{for(i in sum) printf "%d;%s\n", sum[i], i}' "./temp/t_argument_townB.txt" >"./temp/t_argument_sum_pre_town_b.csv"
-
-        # #TODO:on fait une liste qui associe un conducteur à un ID de route, comme ça on sait si il est déjà passé
-        # #si il est pas passé on l'ajoute au nombre de conducteur et on l'ajoute à la liste
-
-        # cut "./temp/t_argument.csv" -d";" -f1,4 >"./temp/t_argument_driver_roadid.txt"
-        # awk -F';' '!seen[$1]++ {print $1 ";" $2}' "./temp/t_argument_driver_roadid.txt" >"./temp/t_argument_driver_roadid_list.txt"
-        # echo "Calculating town travel number..."
-        # #HACK can't have that here, we can't use sort, at all for t
-        # sort -t';' -k 1 -n -r "./temp/t_argument_townA.txt" >"./temp/sorted_t_argument_sum.csv"
         echo "Sorting towns..."
         ./progc/bin/CYTruck "t" ${filePath} "./temp/t_result.txt"
 
@@ -271,23 +269,13 @@ for arg in $*; do
         # get the min, the max and average
         # make the graph
 
-        # remove the first line (the column header)
-        #FIXME SLOW AF
-        tail -n +2 ${filePath} >"./temp/s_argument_sum_pre.csv"
-        # sed -i '1d' "${filePath}" >"./temp/s_argument_sum_pre.csv"
-        # awk 'NR>1' "${filePath}" >"./temp/s_argument_sum_pre.csv"
-        # gawk -i inplace 'NR>1' "${filePath}" >"./temp/s_argument_sum_pre.csv"
-        # separate in fields with ;, create a array of sum[route ID] += distance, then print each route ID with it's sum (with 3 decimals)
-        echo "Splitting data..."
-        cut -d";" -f1,5 "./temp/s_argument_sum_pre.csv" --output-delimiter=";" >./temp/s_argument_splitted.csv
-        # split the file in tinier file to make the C file allocation lighter
         #FIXME can be fast and RAM efficient without split?
         # lines_in_chunk=1000000
         # split -l ${lines_in_chunk} "./temp/s_argument_splitted.csv" ./temp/s_argument_sum_splitted_
 
         # use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
         # ./progc/bin/CYTruck "s" ./temp/s_argument_sum_splitted_* "./temp/s_argument_result.txt"
-        ./progc/bin/CYTruck "s" ./temp/s_argument_splitted.csv "./temp/s_argument_result.txt"
+        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result.txt"
 
         # check return result
         CYTruckReturnResult=$?
@@ -307,21 +295,11 @@ for arg in $*; do
         gnuplot ./progc/gnuplot/s_script.gnu
         ;;
     *)
-        echo $arg ": found but not recognized, skipping..."
+        if [ $arg != $filePath ]; then
+            echo $arg ": found but not recognized, skipping..."
+        fi
         ;;
     esac
 done
 
-# end of the time count
-# endTimeCount=$(date +%s.%N)
-endTimeCount=$(date +%s)
-
-# calculate the execution time
-# runtime=$(echo "${endTimeCount} - ${startTimeCount}" | bc)
-runtime=$(echo $((endTimeCount - startTimeCount)))
-# display it
-echo "Execution time:" ${runtime}"s"
-
-# use to wait before exiting the script
-read -p "Press any key to exit"
-exit
+ExitDisplay $startTimeCount
