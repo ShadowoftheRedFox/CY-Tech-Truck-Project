@@ -58,5 +58,7 @@ dkms.conf
 *test.csv
 # temp folder
 /temp/*
+# binary folder
+/progc/bin/*
 # any .old file, which are copy of old version
 **/*.old
