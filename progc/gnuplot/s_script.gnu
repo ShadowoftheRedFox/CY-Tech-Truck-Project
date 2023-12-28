@@ -2,7 +2,7 @@
 set title 'Section length for each route'
 set xlabel 'Route ID'
 set ylabel 'Distances (km)'
-set output './temp/s_image.png'
+set output './images/s_image.png'
 set key noenhanced
 
 # set terminal so it use pngcairo, with the font arial in 20 size
@@ -27,8 +27,8 @@ set rrange [ * : * ] noreverse writeback
 # nomirror is to prevent ticks on both sides of the graph
 # set a tick on y automatically
 set ytics autofreq
-# set a tick on x automatically
-set xtics autofreq nomirror
+# set a tick on x automatically, and rotate the label by 90 degrees
+set xtics autofreq nomirror rotate by 90 right
 
 # style for the line, with color and thickness
 set style line 100 lc rgb "grey" lw 0.5
@@ -41,9 +41,5 @@ set grid ls 100
 # lc rgb sets a color using RGB rules 
 # title set the title for the used functions (line and filled curve here)
 
-plot './temp/s_argument_result.txt' using 1:2 with lines lt -1 lw 2 title 'Average', \
-    '' using 1:3:4 with filledcurve lc rgb "#80FF8080" title 'Min/Max'
-
-
-set output './temp/s_image_test.png'
-plot './temp/s_argument_result.txt' using 1:2:2 with errorbars
+plot './temp/s_argument_result.txt' using (2*$0+1):2:xticlabel(1) with lines lt -1 lw 2 title 'Average', \
+    '' using (2*$0+1):3:4 with filledcurve lc rgb "#80FF8080" title 'Min/Max'

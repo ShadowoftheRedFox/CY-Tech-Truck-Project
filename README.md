@@ -106,6 +106,7 @@ None yet
 - 04/12/2023: Started the data gathering for -l, -s and -t. -l is working between 8 and 14s (Hugo, Bilel, Prince). Started the C file (Bilel).
 - 07/12/2023: Finished -l (Hugo), corrected data for -s (Hugo). Continued the C file for -s (Bilel, Hugo). Made gnuplot script for -s (Hugo).
 - 15/12/2023: Finished graph for -d1, -d2, -l and -s (though not good looking) (Hugo). Optimized shell (Hugo) and C script (Bilel). 
+- 18/12/2023: Corrected -s since the pdf file has been chaned (Hugo).
 
 ## Add large CSV file to the repository
 

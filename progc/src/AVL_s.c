@@ -40,13 +40,13 @@ AVL_s* leftRotation_s(AVL_s* a) {
     a->r = b->l;
     b->l = a;
     //FIXME can speed up using calculus
-    // a->balance = height_s(a->r) - height_s(a->l);
-    // b->balance = height_s(b->r) - height_s(b->l);
+    a->balance = height_s(a->r) - height_s(a->l);
+    b->balance = height_s(b->r) - height_s(b->l);
 
-    int aBal = a->balance;
-    int bBal = b->balance;
-    a->balance = aBal - getMax(bBal, 0) - 1;
-    b->balance = getMin(aBal - 2, getMin(aBal + bBal - 2, bBal - 1));
+    //int aBal = a->balance;
+    //int bBal = b->balance;
+    //a->balance = aBal - getMax(bBal, 0) - 1;
+    //b->balance = getMin(aBal - 2, getMin(aBal + bBal - 2, bBal - 1));
 
     return b;
 }
@@ -56,13 +56,13 @@ AVL_s* rightRotation_s(AVL_s* a) {
     a->l = b->r;
     b->r = a;
     //FIXME can speed up using calculus
-    // a->balance = height_s(a->r) - height_s(a->l);
-    // b->balance = height_s(b->r) - height_s(b->l);
+    a->balance = height_s(a->r) - height_s(a->l);
+    b->balance = height_s(b->r) - height_s(b->l);
 
-    int aBal = a->balance;
-    int bBal = b->balance;
-    a->balance = aBal - getMin(bBal, 0) + 1;
-    b->balance = getMax(aBal + 2, getMax(aBal + bBal + 2, bBal + 1));
+    //int aBal = a->balance;
+    //int bBal = b->balance;
+    //a->balance = aBal - getMin(bBal, 0) + 1;
+    //b->balance = getMax(aBal + 2, getMax(aBal + bBal + 2, bBal + 1));
 
     return b;
 }
