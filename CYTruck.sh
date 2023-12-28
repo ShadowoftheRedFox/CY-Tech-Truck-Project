@@ -102,7 +102,8 @@ for arg in $*; do
 - \"-d2\":\t Show the top 10 drivers with the longest distance travelled.\n
 - \"-l\" :\t Show the top 10 longest routes.\n
 - \"-t\" :\t Show the top 10 most crossed cities with how many different drivers cross it.\n
-- \"-s\" :\t Min, max and average distances for every route."
+- \"-s\" :\t Min, max and average distances for every route.
+- \"-c\" :\t Clean the compiled files. Aka: -clean"
         ;;
     "-c" | "-clean")
         echo "Cleaning compiled files..."
@@ -178,14 +179,16 @@ for arg in $*; do
         awk -F';' '$2 == 1 {sum[$6]+=1} END{for(i in sum) printf "%s;%d\n", i, sum[i]}' ${filePath} >"./temp/d1_argument_sum.csv"
         # sort the value from the second field (length), and only numerical, and reversed to have the longest on top
         echo "Sorting drivers routes..."
-        sort -t';' -k2n "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
+        sort -t';' -k2nr "./temp/d1_argument_sum.csv" >"./temp/sorted_d1_argument_sum.csv"
         echo "Getting the top drivers..."
         # get the top 10 longest route
-        tail -n 10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10.csv"
+        head -10 "./temp/sorted_d1_argument_sum.csv" >"./temp/d1_argument_top10_pre.csv"
+        sort -t';' -k2n "./temp/d1_argument_top10_pre.csv" >"./temp/d1_argument_top10.csv"
         # cat "./temp/d1_argument_top10.csv" # to show the top 10
 
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/d1_script.gnu
+        echo -e "Done.\n"
         ;;
     "-d2")
         echo "d2 arg found"
@@ -207,6 +210,7 @@ for arg in $*; do
 
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/d2_script.gnu
+        echo -e "Done.\n"
         ;;
     "-l")
         echo "l arg found"
@@ -231,6 +235,7 @@ for arg in $*; do
 
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/l_script.gnu
+        echo -e "Done.\n"
         ;;
     "-t")
         echo "t arg found"
@@ -260,6 +265,7 @@ for arg in $*; do
 
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/t_script.gnu
+        echo -e "Done.\n"
         ;;
     "-s")
         echo "s arg found"
@@ -275,7 +281,7 @@ for arg in $*; do
 
         # use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
         # ./progc/bin/CYTruck "s" ./temp/s_argument_sum_splitted_* "./temp/s_argument_result.txt"
-        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result.txt"
+        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result_full.txt"
 
         # check return result
         CYTruckReturnResult=$?
@@ -285,14 +291,17 @@ for arg in $*; do
         fi
 
         # check the existance of the ouput file
-        if [ ! -f "./temp/s_argument_result.txt" ]; then
+        if [ ! -f "./temp/s_argument_result_full.txt" ]; then
             ExitDisplay ${startTimeCount} "Can not find the ouput file."
         fi
+        # cat "./temp/s_argument_result_full.txt"
 
-        # cat "./temp/s_argument_result.txt"
+        sort -t';' -k3nr -k4nr "./temp/s_argument_result_full.txt" >"./temp/s_argument_result_full_sorted.txt"
+        head -50 "./temp/s_argument_result_full_sorted.txt" >"./temp/s_argument_result.txt"
 
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/s_script.gnu
+        echo -e "Done.\n"
         ;;
     *)
         if [ $arg != $filePath ]; then
