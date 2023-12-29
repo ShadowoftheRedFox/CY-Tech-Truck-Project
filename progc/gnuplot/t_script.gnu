@@ -39,4 +39,4 @@ set boxwidth 0.5 relativ
 # 1 is the y position (the data in the field 1)
 # xticlabel(2) put a label on the x axis with the content in the field 2
 # using boxes style 
-plot './temp/l_argument_top10_finish.csv' u (2*$0+1):1:xticlabel(2) with boxes notitle
+plot './temp/t_result.txt' u (2*$0+1):1:xticlabel(2) with boxes notitle

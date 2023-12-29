@@ -4,63 +4,11 @@
 #include <string.h>
 #include "./AVL_t.h"
 
-/*
-Goal: faire fonctionner -t
-
-Step 1: les fichiers d'entrés:
-il nous faut les routes pour savoir combien il y a de routes par ville
-les noms des conducteurs pour la même raison
-et les ville A et B, pour avoir tout les cas
-et peut être même les step pour avoir une optimization
-
-donc tout sauf la distance
-
-Step 2: le tri
-on doit forcément trier par le nom des villes
-mais il est peut être nécéssaire de faire un préprocéssus:
-comme regarder si des villes n'apparaissent qu'une fois, ou faire une liste de conducteurs etc
-
-mais par quel chemin passer?
--> je pense par les routes ID:
-    un seul passage pour toutes les villes et les conducteurs
-    on ajoute deux villes à la fois, on passe donc tout les cas
-
-    TODO:on fait une liste qui associe un conducteur à un ID de route, comme ça on sait si il est déjà passé
-    si il est pas passé on l'ajoute au nombre de conducteur et on l'ajoute à la liste
-
-    idem pour l'ID des routes, une liste
-    si déjà présent pour la route, on skip, sinon on ajoute 1 au conteur de la ville
-
-! Check le cas ou la ville A = ville B
-
-Step 3: Le top 10
-par ordre alphabétique, avec NOM VILLE; NB ROUTE; NB CONDUCTEUR
-Deux choix:
-- on sort dans le fichier output seulement le top 10 -> fonction qui chope les 10 villes les plus traversé
-- on sort tout et on cherche
-
-IL Y A SUREMENT UNE METHODE PLUS EFFICACE, CAR ON REGARDE PLUSIEURS FOIS LES FICHIERS SOURCE
-
-Step 4: Graph
-devrait pas etre trop compliqué de faire un graph groupé, il a plein d'exemple dejà
-*/
-
-/*
-alors
-pour trier, on commence par l'AVL qui prend en paramètre principal le nom de la ville:
-on les tries par ordre alphabétique, et on prend ville A et ville B sans distinction, donc pas besoin de couper le document pour ça
-on les mets dans des noeuds et on compte le nombre d'occurences, avec ce nombre on peut calculer le nombre de fois qu'elles ont été traversé
-
-on compte avec cela un compteur pour chaque route et conducteur unique
-donc le nombre de ville dans compteur doit être pair avant le calcul (c'est un check de redondance!)
-on calcul le nombre de trajet en une ville en faisant: ((compteur-2)/2) + 2 = (compteur+2)/2
-c'est tout
-*/
-
-AVL_t* createAVL_t(const char* town_name) {
+AVL_t* createAVL_t(const char town_name[TOWN_NAME_LENGTH + 1]) {
     AVL_t* a = malloc(sizeof(AVL_t));
     strcpy(a->town_name, town_name);
     a->count = 1;
+    a->start = 0;
     a->balance = 0;
     a->l = NULL;
     a->r = NULL;
@@ -127,20 +75,24 @@ AVL_t* balanceAVL_t(AVL_t* a) {
 }
 
 //function that insert into AVL_t tree
-void insertAVL_t(AVL_t** a, const char* town_name, int* h) {
+void insertAVL_t(AVL_t** a, const char town_name[TOWN_NAME_LENGTH + 1], int* h, Bool isStart) {
     //handling casse where a is empty
     if (*a == NULL) {
         *a = createAVL_t(town_name);
+        if (isStart) {
+            (*a)->start = 1;
+        }
         *h = 1;
     } else if (strcmp((*a)->town_name, town_name) < 0) {
-        insertAVL_t(&((*a)->l), town_name, h);
+        insertAVL_t(&((*a)->l), town_name, h, isStart);
         *h = -(*h);
     } else if (strcmp((*a)->town_name, town_name) > 0) {
-        insertAVL_t(&((*a)->r), town_name, h);
+        insertAVL_t(&((*a)->r), town_name, h, isStart);
     } else {
         // handle the equal case since there are more data than a normal AVL_t
         *h = 0;
         (*a)->count++;
+        (*a)->start += (int)isStart;
     }
 
     if (*h != 0) {
@@ -199,15 +151,8 @@ void print2DLeftToRight_t(AVL_t* a) {
 
 void freeAVL_t(AVL_t* a) {
     if (a == NULL) return;
-    if (a->l) {
-        freeAVL_t(a->l);
-        freeAVL_t(a->r);
-
-    }
-    if (a->r) {
-        freeAVL_t(a->r);
-    }
-    free(a->town_name);
+    freeAVL_t(a->l);
+    freeAVL_t(a->r);
     free(a);
 }
 

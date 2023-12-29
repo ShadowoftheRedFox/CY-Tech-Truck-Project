@@ -3,20 +3,23 @@
 // TODO edit comments too
 
 #define TOWN_NAME_LENGTH 50
-#define DRIVER_NAME_LENGTH 50
 
 typedef struct AVL_t {
     struct AVL_t* l;
     struct AVL_t* r;
     char town_name[TOWN_NAME_LENGTH];
     int count;
+    int start;
     int balance;
 } AVL_t;
 
+typedef enum Bool {
+    false, true
+} Bool;
 
-AVL_t* createAVL_t(const char* town_name);
+AVL_t* createAVL_t(const char town_name[TOWN_NAME_LENGTH + 1]);
 
-void insertAVL_t(AVL_t** AVL, const char* town_name, int* balance);
+void insertAVL_t(AVL_t** AVL, const char town_name[TOWN_NAME_LENGTH + 1], int* balance, Bool isStart);
 /**
  *@brief Free the AVL from the heap
  *

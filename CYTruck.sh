@@ -47,7 +47,10 @@ cd "$(dirname "$0")"
 # create the images folder if it isn't done already
 if [ ! -d 'images' ]; then
     # create the dir
-    mkdir -p 'images' #? check if errors?
+    result=$(mkdir -p 'images')
+    if [ $? != 0 ]; then
+        echo "Error in setup:" $result
+    fi
     echo 'Created images directory.'
 else
     echo 'The images directory exists already.'
@@ -55,13 +58,16 @@ fi
 # clean if the temp folder exists, or create it if it isn't done already
 if [ ! -d './temp' ]; then
     # create the dir
-    mkdir -p 'temp' #? check if errors?
+    result=$(mkdir -p 'temp')
+    if [ $? != 0 ]; then
+        echo "Error in setup:" $result
+    fi
     echo 'Created temp directory.'
 elif [ -n "$(ls "./temp/")" ]; then
     echo 'The temp directory exists already, cleaning...'
     oldDir=$(pwd)
     cd "temp"
-    rm -r * #? check if errors?
+    rm -r *
     cd "${oldDir}"
     echo 'Done.'
 else
@@ -108,7 +114,12 @@ for arg in $*; do
     "-c" | "-clean")
         echo "Cleaning compiled files..."
         make -f ./progc/Makefile clean
-        ExitDisplay ${startTimeCount} "Done."
+        # do not stop if more arguments found
+        if [ $# -gt 2 ]; then
+            echo "Done."
+        else
+            ExitDisplay ${startTimeCount} "Done."
+        fi
         ;;
     esac
 done
@@ -122,8 +133,8 @@ if [ ! -d "./progc/bin" ] || [ ! -f "./progc/bin/CYTruck" ]; then
     if ! command -v gcc >/dev/null 2>&1; then
         ExitDisplay 0 "gcc could not be found"
     fi
-    make -f "./progc/Makefile" builddir
-    make -f "./progc/Makefile" objdir
+    compilation=$(make -f "./progc/Makefile" builddir)
+    compilation=$(make -f "./progc/Makefile" objdir)
     compilation=$(make -f "./progc/Makefile")
     # check file compilation result
     if [ $? != 0 ]; then
@@ -247,7 +258,7 @@ for arg in $*; do
         # make the graph
 
         echo "Sorting towns..."
-        ./progc/bin/CYTruck "t" ${filePath} "./temp/t_result.txt"
+        ./progc/bin/CYTruck "t" ${filePath} "./temp/t_result.txt" #>./temp/log.txt
 
         # check return result
         CYTruckReturnResult=$?
@@ -257,14 +268,14 @@ for arg in $*; do
         fi
 
         # check the existance of the ouput file
-        if [ ! -f "./temp/t_argument_result.txt" ]; then
+        if [ ! -f "./temp/t_result.txt" ]; then
             ExitDisplay ${startTimeCount} "Can not find the ouput file."
         fi
 
-        # cat "./temp/t_argument_result.txt"
+        # cat "./temp/t_result.txt"
 
         echo "Creating graph..."
-        gnuplot ./progc/gnuplot/t_script.gnu
+        #gnuplot ./progc/gnuplot/t_script.gnu
         echo -e "Done.\n"
         ;;
     "-s")
@@ -281,7 +292,7 @@ for arg in $*; do
 
         # use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
         # ./progc/bin/CYTruck "s" ./temp/s_argument_sum_splitted_* "./temp/s_argument_result.txt"
-        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result_full.txt"
+        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result_full.txt" >./temp/log.txt
 
         # check return result
         CYTruckReturnResult=$?
@@ -302,11 +313,6 @@ for arg in $*; do
         echo "Creating graph..."
         gnuplot ./progc/gnuplot/s_script.gnu
         echo -e "Done.\n"
-        ;;
-    *)
-        if [ $arg != $filePath ]; then
-            echo $arg ": found but not recognized, skipping..."
-        fi
         ;;
     esac
 done

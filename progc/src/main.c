@@ -6,6 +6,43 @@
 #include "./main.h"
 // TODO: check if argument valid, check alloc result, try to change all types in errorcode for easier error tracking
 
+ErrorCode GetTop10(AVL_t* input, AVL_t* top_10[10], int count) {
+    // array invalid or invalid AVL
+    if (input == NULL || top_10 == NULL) {
+        return CODE_ARG_INVALID;
+    }
+    // to keep track in case of error
+    int result = CODE_OK;
+    // go to the left side
+    if (input->l) {
+        result = GetTop10(input->l, top_10, count);
+    }
+    //edge case where the route id is -1 (the AVL root)
+    if (strcmp(FIRST_NODE_TOWN_NAME, input->town_name) != 0) {
+        if (count < 10) {
+            // fill the array if not fiull yet
+            top_10[count++] = input;
+        } else {
+            // replace the smallest crossed city and replace it with the new if it's bigger
+            int minId = 0;
+            for (int i = 0; i < 10; i++) {
+                if ((top_10[minId])->count > (top_10[i])->count) {
+                    minId = i;
+                }
+            }
+            // replace if bigger
+            if (input->count > (top_10[minId])->count) {
+                top_10[minId] = input;
+            }
+        }
+    }
+    // go to the right side
+    if (input->r) {
+        result = GetTop10(input->r, top_10, count);
+    }
+    return result;
+}
+
 ErrorCode TArgumentProcess(int argc, char const* argv[]) {
     // TODO t argument C code
 
@@ -14,14 +51,16 @@ ErrorCode TArgumentProcess(int argc, char const* argv[]) {
     // data to process
     char* line = malloc(sizeof(char) * LINE_LENGTH);
     char town_name_A[TOWN_NAME_LENGTH + 1], town_name_B[TOWN_NAME_LENGTH + 1];
+    int step_id;
+    // useless but needed to read line
     char driver_name[DRIVER_NAME_LENGTH + 1];
     int route_id;
-    // useless but needed to read line
     float distance;
-    int step_id;
 
     // create the AVL with a city name that will never appear
-    AVL_t* avl = createAVL_t("Town_Test_0");
+    AVL_t* avl = createAVL_t(FIRST_NODE_TOWN_NAME);
+
+    int c = 0;
 
     // read each file
     for (int i = 2; i < argc - 1; i++) {
@@ -50,28 +89,34 @@ ErrorCode TArgumentProcess(int argc, char const* argv[]) {
             // printf("ROUTE_ID: %d,\t TOWN A: %s,\t TOWN B: %s,\t DRIVER: %s\n", route_id, town_name_A, town_name_B, driver_name);
 
             // if the names are the same in the same step
-            if (strcmp(town_name_A, town_name_B) == 0) {
-                insertAVL_t(&avl, town_name_A, &(avl->balance));
+            if (step_id == 1) {
+                insertAVL_t(&avl, town_name_A, &(avl->balance), true);
             } else {
-                insertAVL_t(&avl, town_name_A, &(avl->balance));
-                insertAVL_t(&avl, town_name_B, &(avl->balance));
+                insertAVL_t(&avl, town_name_A, &(avl->balance), false);
             }
+            insertAVL_t(&avl, town_name_B, &(avl->balance), false);
+            c++;
         }
 
         fclose(sourceFile);
     }
+    free(line);
 
     // travel infix the avl, and fprintf the ROUTE_ID;TIMES CROSSED;DRIVER CROSSED
     printf("Output file: %s\n", argv[argc - 1]);
 
-    AVL_t* temp = avl;
-    // get the top 10 city in crossed amount
-    while (height_t(temp) > 11) {
-        printf("%d\n", height_t(temp));
-        temp = temp->r;
-    }
-    printf("%d\n", height_t(temp));
+    AVL_t* top_10[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
+    // get the top 10 most corssed cities and put them in the array
+    ErrorCode res = GetTop10(avl, top_10, 0);
+
+    // stop if error
+    if (res != CODE_OK) {
+        printf("Error while getting the top 10 cities: %d\n", res);
+        return res;
+    }
+
+    // fill the output file
     FILE* output_file = fopen(argv[argc - 1], "w+");
     if (output_file == NULL) {
         // failed to save
@@ -79,6 +124,16 @@ ErrorCode TArgumentProcess(int argc, char const* argv[]) {
         return CODE_FILE_CREATE_ERROR;
     }
 
+    for (int i = 0; i < 10; i++) {
+        // there can be less than 10 cities, so check if it's full
+        if (top_10[i] != NULL) {
+            //fprintf(output_file, "%s;%d;%d\n", (top_10[i])->town_name, ((top_10[i])->count + 2) / 2, (top_10[i])->start);
+            fprintf(output_file, "%s;%d;%d\n", (top_10[i])->town_name, (top_10[i])->count, (top_10[i])->start);
+        }
+    }
+
+    freeAVL_t(avl);
+    fclose(output_file);
     return CODE_OK;
 }
 

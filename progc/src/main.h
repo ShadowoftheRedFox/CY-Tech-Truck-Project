@@ -5,6 +5,7 @@
 #define LINE_LENGTH 100
 #define TOWN_NAME_LENGTH 50
 #define DRIVER_NAME_LENGTH 50
+#define FIRST_NODE_TOWN_NAME "Town_Test_0"
 
 // error code, labelized
 typedef enum ErrorCode {
