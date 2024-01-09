@@ -156,6 +156,24 @@ void freeAVL_t(AVL_t* a) {
     free(a);
 }
 
+ErrorCode getTop10MostTravelledTowns(AVL_t* avl, AVL_t* tab[10]) {
+    if (avl == NULL || tab == NULL) {
+        return CODE_ARG_NULL;
+    }
+    // fill tab with data and replace the minimum with the found one if it's greater than it
+    // get the min value
+    int min = 0;
+    int min_index = 0;
+    for (int i = 0; i < 10; i++) {
+        if (tab[i] != NULL && (tab[i])->count > min) {
+            min = (tab[i])->count;
+            min_index = i;
+        }
+    }
+    // get a value bigger than the min
+    //TODO
+}
+
 // CODE TO TEST THE FILE
 /* int main(int argc, char const* argv[]) {
     srand(time(NULL));

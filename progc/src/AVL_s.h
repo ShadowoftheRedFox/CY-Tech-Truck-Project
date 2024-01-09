@@ -1,6 +1,8 @@
 #ifndef HEADER_AVL_S
 #define HEADER_AVL_S
 
+#include "main.h"
+
 typedef struct AVL_s {
     struct AVL_s* l;
     struct AVL_s* r;

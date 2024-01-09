@@ -1,5 +1,8 @@
 #ifndef HEADER_AVL_T
 #define HEADER_AVL_T
+
+#include "main.h"
+
 // TODO edit comments too
 
 #define TOWN_NAME_LENGTH 50
@@ -40,12 +43,6 @@ void print2DLeftToRight_t(AVL_t* AVL);
  */
 void infixTravel_t(AVL_t* AVL);
 
-/**
- *@brief Get the number of node in the avl
- *
- * @param avl the avl to count from
- * @return int the number of node contained
- */
-int height_t(AVL_t* avl);
+ErrorCode getTop10MostTravelledTowns(AVL_t* avl, AVL_t* tab[10]);
 
 #endif

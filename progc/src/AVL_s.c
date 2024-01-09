@@ -5,6 +5,7 @@
 
 AVL_s* createAVL_s(int roadId, float distance) {
     AVL_s* a = malloc(sizeof(AVL_s));
+    //TODO check malloc return
     a->roadId = roadId;
     a->min = distance;
     a->max = distance;
@@ -36,6 +37,10 @@ int getMin(const int a, const int b) {
 
 //rotations
 AVL_s* leftRotation_s(AVL_s* a) {
+    if (a == NULL) {
+        printf("ERROR NULL\n");
+        exit(CODE_ARG_NULL);
+    }
     AVL_s* b = a->r;
     a->r = b->l;
     b->l = a;
@@ -52,6 +57,10 @@ AVL_s* leftRotation_s(AVL_s* a) {
 }
 
 AVL_s* rightRotation_s(AVL_s* a) {
+    if (a == NULL) {
+        printf("ERROR NULL\n");
+        exit(CODE_ARG_NULL);
+    }
     AVL_s* b = a->l;
     a->l = b->r;
     b->r = a;
@@ -69,17 +78,32 @@ AVL_s* rightRotation_s(AVL_s* a) {
 
 //double rotations
 AVL_s* doubleLeftRotation_s(AVL_s* a) {
+    if (a == NULL) {
+        //TODO make all return type errorcode type
+        printf("ERROR NULL\n");
+        exit(CODE_ARG_NULL);
+    }
     a->r = rightRotation_s(a->r);
     return leftRotation_s(a);
 }
 
 AVL_s* doubleRightRotation_s(AVL_s* a) {
+    if (a == NULL) {
+        printf("ERROR NULL\n");
+        exit(CODE_ARG_NULL);
+    }
+    printf("%d\n", a->l == NULL);
     a->l = leftRotation_s(a->l);
+    printf("%d\n", a == NULL);
     return rightRotation_s(a);
 }
 
 //function to balance AVL_s
 AVL_s* balanceAVL_s(AVL_s* a) {
+    if (a == NULL) {
+        printf("ERROR NULL\n");
+        exit(CODE_ARG_NULL);
+    }
     if (a->balance > 1) {
         if (a->r->balance < 0) {
             a = doubleLeftRotation_s(a);
@@ -118,11 +142,14 @@ void insertAVL_s(AVL_s** a, int roadId, float distance, int* h) {
         }
         (*a)->averageSum += distance;
         *h = 0;
+        return;
     }
 
     if (*h != 0) {
         (*a)->balance += *h;
+        printf("bal before\n");
         *a = balanceAVL_s(*a);
+        printf("bal after\n");
         if ((*a)->balance == 0) {
             *h = 0;
         } else {

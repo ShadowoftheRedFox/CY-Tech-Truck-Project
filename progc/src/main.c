@@ -184,7 +184,11 @@ ErrorCode SArgumentProcess(int argc, char const* argv[]) {
             return CODE_FILE_OPEN_ERROR;
         }
 
-        // assuming the first line do not contains headers 
+        // assuming the first line contains headers, only in the first source file
+        if (i == 2) {
+            fgets(line, sizeof(char) * (LINE_LENGTH), sourceFile);
+            printf("Skipped first line: %s\n", line);
+        }
         // process each line of the CSV file
 
         while (!feof(sourceFile)) {

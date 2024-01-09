@@ -35,8 +35,8 @@ set style line 100 lc rgb "grey" lw 0.5
 # enable grid with the line style we made
 set grid ls 100
 
-# 1:2 set in x the value in the first field, and in y the value in the second field (for lines function)
-# 1:3:4 is using the value in the first field as x, and fill between the y value provided by teh 3rd and 4th field (for filled curves function)
+# (2*$0+1):2 set in x the value as the line number being read, and in y the value in the second field (for lines function)
+# (2*$0+1):3:4 is using the line number being read as x, and fill between the y value provided by teh 3rd and 4th field (for filled curves function)
 # lt -1 set the color as black, with lw 2 set the line width
 # lc rgb sets a color using RGB rules 
 # title set the title for the used functions (line and filled curve here)

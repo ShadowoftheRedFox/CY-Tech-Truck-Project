@@ -292,7 +292,7 @@ for arg in $*; do
 
         # use a C file with the distance as ABR number with the route ID, then get mix, max and average, output in a file
         # ./progc/bin/CYTruck "s" ./temp/s_argument_sum_splitted_* "./temp/s_argument_result.txt"
-        ./progc/bin/CYTruck "s" $filePath "./temp/s_argument_result_full.txt" >./temp/log.txt
+        ./progc/bin/CYTruck "s" ${filePath} "./temp/s_argument_result_full.txt" >./temp/log.txt
 
         # check return result
         CYTruckReturnResult=$?
@@ -317,4 +317,4 @@ for arg in $*; do
     esac
 done
 
-ExitDisplay $startTimeCount
+ExitDisplay ${startTimeCount}
